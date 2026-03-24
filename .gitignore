@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+superleap-test-env/
+venv/
+.venv/
+env/
+
+# Installed dependencies
+python/
+package/
+
+# SAM build artifacts
+out.yml
+.aws-sam/
+packaged.yml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.*
+
+python
+python.zip
+
+custom_connector_tools/*
+
+MarketplaceIntegration.md
+
+get_object_response.json
+get_records_request.json
+get_records_response.json
+list_objects_response.json
