@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: Superleap Connector For Appflow.
+Resources:
+  Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'superleap-connector-python'
+      Handler: custom_connector_superleap.handlers.lambda_handler.superleap_lambda_handler # CHECK THIS AGAIN
+      Runtime: python3.8
+      CodeUri: ../.
+      Description: "Superleap Connector For Appflow"
+      Timeout: 30
+      MemorySize: 256
+      Policies:
+        Version: '2012-10-17'
+        Statement:
+          Effect: Allow
+          Action: 'secretsmanager:GetSecretValue'
+          Resource: !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:appflow!${AWS::AccountId}-Superleap-*'
+      Layers:
+        - !Ref Dependencies
+  Dependencies:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: custom-connector-dependency-lib
+      Description: Dependencies for the sample custom connector
+      ContentUri: ../../package/.
+      CompatibleRuntimes:
+        - python3.12
+  PolicyPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !GetAtt Function.Arn
+      Action: lambda:InvokeFunction
+      Principal: 'appflow.amazonaws.com'
+      SourceAccount: !Ref 'AWS::AccountId'
+      SourceArn: !Sub 'arn:aws:appflow:${AWS::Region}:${AWS::AccountId}:*'
