@@ -36,7 +36,6 @@ Thumbs.db
 .env.*
 
 python
-python.zip
 
 custom_connector_tools/*
 
