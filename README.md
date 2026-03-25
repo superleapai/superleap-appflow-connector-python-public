@@ -1,4 +1,7 @@
+<img width="494" height="113" alt="superleap" src="https://github.com/user-attachments/assets/0b9e01ff-6cf1-473b-ab88-d3ad9f1e8a13" />
+
 # Superleap AppFlow Connector
+
 
 Amazon AppFlow custom connector for [Superleap](https://superleap.com/), built with the [AWS AppFlow Custom Connector SDK](https://github.com/awslabs/aws-appflow-custom-connector-python) for Python.
 
