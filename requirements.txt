@@ -5,3 +5,4 @@ urllib3==1.26.6
 awslambdaric==1.2.2
 setuptools~=65.6.3
 jsonschema==4.1.2
+certifi>=2024.2.2

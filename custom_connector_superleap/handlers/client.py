@@ -1,3 +1,4 @@
+import certifi
 import urllib3
 import logging
 
@@ -16,7 +17,11 @@ class SuperleapResponse:
 class HttpsClient:
     def __init__(self, access_token):
         timeout = urllib3.Timeout(connect=CONNECTION_TIMEOUT_SECS, read=READ_TIMEOUT_SECS)
-        self.https_client = urllib3.PoolManager(timeout=timeout)
+        self.https_client = urllib3.PoolManager(
+            timeout=timeout,
+            cert_reqs='CERT_REQUIRED',
+            ca_certs=certifi.where()
+        )
         self.access_token = access_token
         self.authorization_header = {'Authorization': 'Bearer ' + access_token}
 
