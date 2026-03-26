@@ -7,7 +7,7 @@ Resources:
     Properties:
       FunctionName: !Sub 'superleap-connector-python'
       Handler: custom_connector_superleap.handlers.lambda_handler.superleap_lambda_handler # CHECK THIS AGAIN
-      Runtime: python3.8
+      Runtime: python3.12
       CodeUri: ../.
       Description: "Superleap Connector For Appflow"
       Timeout: 30

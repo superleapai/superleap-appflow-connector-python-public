@@ -15,11 +15,7 @@ class SuperleapLambdaHandler(BaseLambdaConnectorHandler):
 
 def superleap_lambda_handler(event, context):
     """Lambda entry point."""
-    # LOGGER.info("=== Lambda invocation started ===")
-    # LOGGER.info(f"Event: {event}")
-    # LOGGER.info(f"Context: {context}")
     
     result = SuperleapLambdaHandler().lambda_handler(event, context)
     
-    # LOGGER.info("=== Lambda invocation completed ===")
     return result

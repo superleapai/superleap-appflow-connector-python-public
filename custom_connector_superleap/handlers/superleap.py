@@ -50,10 +50,8 @@ def get_superleap_client(connector_context: ConnectorContext):
 def check_for_errors_in_superleap_response(response: SuperleapResponse) -> Optional[ErrorDetails]:
     """Parse Superleap response for errors and convert them to an ErrorDetails object."""
     status_code = response.status_code
-    # LOGGER.info(f"Checking for errors in Superleap response with status code: {status_code}")
 
     if status_code in HTTP_STATUS_CODE_RANGE:
-        # LOGGER.info(f"Status code {status_code} is in success range, no errors")
         return None
 
     LOGGER.warning(f"Received error status code: {status_code}")
