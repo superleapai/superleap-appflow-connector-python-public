@@ -19,7 +19,6 @@ class QueryObject:
                  fields: List[str] = None,
                  next_token: str = None,
                  entity_definition: EntityDefinition = None):
-        # LOGGER.info(f"Creating QueryObject for object: {entity_identifier}")
         self.entity_identifier = entity_identifier
         self.selected_field_names = selected_field_names
         self.filter_expression = filter_expression
@@ -58,7 +57,6 @@ class SuperleapFilterParser:
             replica_buffer_minutes: Minutes to subtract from start time for replica lag
         """
         self.replica_buffer_minutes = replica_buffer_minutes
-        # LOGGER.info(f"Initialized SuperleapFilterParser with {replica_buffer_minutes} minute buffer")
     
     def parse(self, filter_expression: str) -> Dict[str, Any]:
         """
@@ -76,7 +74,6 @@ class SuperleapFilterParser:
             LOGGER.info("No filter expression provided")
             return {}
         
-        LOGGER.info(f"Parsing filter expression: {filter_expression}")
         
         # Parse the conditions
         conditions = []
@@ -139,12 +136,10 @@ class SuperleapFilterParser:
         start_value = match.group(2)
         end_value = match.group(3)
         
-        LOGGER.info(f"Parsed BETWEEN: field={field}, start={start_value}, end={end_value}")
         
         # Apply buffer for replica lag on timestamp fields
         if field in ['created_at', 'updated_at', 'deleted_at'] and self.replica_buffer_minutes > 0:
             start_value = self._add_buffer_to_timestamp(start_value)
-            LOGGER.info(f"Applied {self.replica_buffer_minutes} minute buffer: new start={start_value}")
         
         # Convert timestamps to epoch milliseconds if they're ISO format
         if self._is_iso_timestamp(start_value):
@@ -184,7 +179,6 @@ class SuperleapFilterParser:
         # Parse values (remove quotes and split by comma)
         values = [v.strip().strip("'\"") for v in values_str.split(',')]
         
-        LOGGER.info(f"Parsed IN: field={field}, values={values}")
         
         return [
             {
@@ -222,7 +216,6 @@ class SuperleapFilterParser:
         # Handle data type conversion
         value = self._convert_value(field, value)
         
-        LOGGER.info(f"Parsed comparison: field={field}, operator={operator}, value={value}")
         
         # Convert operator to Superleap format
         superleap_operator = self.OPERATOR_MAP.get(operator, operator.lower())
@@ -289,7 +282,6 @@ class SuperleapFilterParser:
             
             # Convert to epoch milliseconds
             epoch_millis = int(dt.timestamp() * 1000)
-            LOGGER.info(f"Converted {timestamp_str} to epoch millis: {epoch_millis}")
             return epoch_millis
         except Exception as e:
             LOGGER.error(f"Failed to convert timestamp {timestamp_str}: {e}")
@@ -344,7 +336,6 @@ class SuperleapFilterParser:
 
 def build_query(query_object: QueryObject) -> dict:
     """Build Superleap specific query given a QueryObject."""
-    LOGGER.info(f"Building query for object: {query_object.entity_identifier}")
     
     if not query_object.selected_field_names:
         LOGGER.error("No fields were selected for Superleap Query")
@@ -355,17 +346,13 @@ def build_query(query_object: QueryObject) -> dict:
 
             # page = int(query_object.next_token)
 
-    # Initialize query data structure
-    # LOGGER.info("Initializing query data structure")
 
 
     # Parse filter expression
     filters = {}
     if query_object.filter_expression:
-        # LOGGER.info(f"Parsing filter expression: {query_object.filter_expression}")
         parser = SuperleapFilterParser(replica_buffer_minutes=0)
         filters = parser.parse(query_object.filter_expression)
-        # LOGGER.info(f"Parsed filters: {filters}")
 
 
 
@@ -377,7 +364,6 @@ def build_query(query_object: QueryObject) -> dict:
         "next_token": query_object.next_token
     }
     # Make sure the records are being ordered by created_at in ascending order by default so that the records are always properly retrieved.
-    
-    # LOGGER.info(f"Query data initialized: {query_data}")
+
 
     return query_data

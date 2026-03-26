@@ -22,18 +22,15 @@ class SuperleapConfigurationHandler(ConfigurationHandler):
     """Superleap Configuration Handler."""
     def validate_connector_runtime_settings(self, request: requests.ValidateConnectorRuntimeSettingsRequest) -> \
             responses.ValidateConnectorRuntimeSettingsResponse:
-        # LOGGER.info(f"Validating connector runtime settings: {request.connector_runtime_settings}")
         errors = validation.validate_connector_runtime_settings(request)
         if errors:
             LOGGER.error(f"Validation errors found: {errors}")
             return responses.ValidateConnectorRuntimeSettingsResponse(is_success=False, error_details=errors)
-        # LOGGER.info("Connector runtime settings validation successful")
         return responses.ValidateConnectorRuntimeSettingsResponse(is_success=True)
 
     def validate_credentials(self, request: requests.ValidateCredentialsRequest) -> \
             responses.ValidateCredentialsResponse:
         # Get API key and base URL directly from connector runtime settings
-        # LOGGER.info(f"Validating credentials with runtime settings: {request.connector_runtime_settings}")
 
         connector_context = context.ConnectorContext(credentials=request.credentials,
                                                      api_version=constants.API_VERSION,
@@ -42,15 +39,11 @@ class SuperleapConfigurationHandler(ConfigurationHandler):
         request_uri = superleap.build_superleap_request_uri(connector_context=connector_context,
                                                                   url_format=SUPERLEAP_VERIFY_URL_FORMAT,
                                                                   request_path="")
-        # LOGGER.info(f"Verification request URI: {request_uri}")
         
         # Create a client with the API key
         try:
-            # LOGGER.info("Getting Superleap client for validation")
             client = superleap.get_superleap_client(connector_context)
-            # LOGGER.info("Making verification request")
             response = client.rest_get(request_uri)
-            # LOGGER.info(f"Verification response status: {response.status_code}")
             
             # Check if the request was successful
             if response.status_code != 200:
@@ -64,7 +57,6 @@ class SuperleapConfigurationHandler(ConfigurationHandler):
                     )
                 )
             
-            # LOGGER.info("Credentials validation successful")
             return responses.ValidateCredentialsResponse(is_success=True)
         except Exception as e:
             error_message = f"Error validating credentials: {str(e)}"
@@ -90,7 +82,6 @@ class SuperleapConfigurationHandler(ConfigurationHandler):
             description='Base URL for Superleap API',
             scope=settings.ConnectorRuntimeSettingScope.CONNECTOR_PROFILE
         )
-        # LOGGER.info(f"Runtime setting created: {base_url_setting.key}")
 
         # # Flow-level settings with Boolean type
         # import_new_fields_setting = settings.ConnectorRuntimeSetting(
@@ -106,7 +97,6 @@ class SuperleapConfigurationHandler(ConfigurationHandler):
         authentication_config = auth.AuthenticationConfig(
             is_api_key_auth_supported=True
         )
-        # LOGGER.info("Authentication config created with API key support")
 
         response = responses.DescribeConnectorConfigurationResponse(
             is_success=True,
@@ -119,5 +109,4 @@ class SuperleapConfigurationHandler(ConfigurationHandler):
             supported_api_versions=[constants.API_VERSION],  
             logo_url="https://dsm6sohylf53x.cloudfront.net/superleap.png"
         )
-        # LOGGER.info("Connector configuration description completed successfully")
         return response

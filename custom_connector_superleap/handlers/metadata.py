@@ -55,12 +55,10 @@ SUPPORTED_WRITE_OPERATIONS_KEY = "supported_write_operations"
 
 def parse_entities(json_string: str) -> List[context.Entity]:
     """Parse JSON response from Superleap query into a list of Entities."""
-    # LOGGER.info("Starting to parse entities from JSON response")
     try:
         parent_object = json.loads(json_string)
     except json.JSONDecodeError as e:
         LOGGER.error(f"Failed to parse JSON response: {e}")
-        LOGGER.error(f"Raw response: {json_string[:200]}...")  # Log first 200 chars of response
         return []
         
     entity_list = []
@@ -90,17 +88,14 @@ def build_entity(entity_data: Dict[str, Any]) -> context.Entity:
         has_nested_entities=entity_data.get(HAS_NESTED_ENTITIES_KEY, False),
         is_writable=entity_data.get(IS_WRITABLE_KEY, False)
     )
-    # LOGGER.info(f"Created entity with identifier: {entity.entity_identifier}, label: {entity.label}")
     return entity
 
 def parse_entity_definition(json_string: str) -> context.EntityDefinition:
     """Parse JSON response from Superleap query into an entity definition."""
-    # LOGGER.info("Starting to parse entity definition from JSON response")
     try:
         parent_object = json.loads(json_string)
     except json.JSONDecodeError as e:
         LOGGER.error(f"Failed to parse JSON response: {e}")
-        LOGGER.error(f"Raw response: {json_string[:200]}...")  # Log first 200 chars of response
         # Create a default entity and return
         entity = context.Entity(entity_identifier="unknown", label="Unknown Entity")
         return context.EntityDefinition(entity=entity, fields=[])
@@ -119,7 +114,6 @@ def parse_entity_definition(json_string: str) -> context.EntityDefinition:
                 field_definition = build_field_definition(field)
                 field_definitions.append(field_definition)
                 
-            # LOGGER.info(f"Processed {len(field_list)} fields for entity {entity.entity_identifier}")
         else:
             LOGGER.warning(f"No fields found for entity {entity.entity_identifier}")
     else:
@@ -187,8 +181,6 @@ def build_field_definition(field: dict) -> context.FieldDefinition:
 class SuperleapMetadataHandler(MetadataHandler):
     """Superleap Metadata handler."""
     def list_entities(self, request: requests.ListEntitiesRequest) -> responses.ListEntitiesResponse:
-        # LOGGER.info(f"Received ListEntities request {request}") # Check this once here
-        # LOGGER.info(f"Next token for list entities: {request.next_token}")
         
         # Validation will be done by the get_superleap_client function which retrieves the API key from secrets manager
         error_details = validation.validate_request_connector_context(request)
@@ -211,13 +203,10 @@ class SuperleapMetadataHandler(MetadataHandler):
         #     post_data['next_token'] = request.next_token
             
         post_data_str = json.dumps(post_data)
-        # LOGGER.info(f"Making POST request to list entities: {request_uri} with data: {post_data_str}")
         
         try:
             superleap_client = superleap.get_superleap_client(request.connector_context)
             superleap_response = superleap_client.rest_post(request_uri, post_data_str)
-            # LOGGER.info(f"Received response status: {superleap_response.status_code}")
-            # LOGGER.info(f"Response body preview: {superleap_response.response[:200]}...")
         except Exception as e:
             LOGGER.error(f"Exception during API call to list entities: {str(e)}", exc_info=True)
             error = responses.ErrorDetails(
@@ -237,18 +226,13 @@ class SuperleapMetadataHandler(MetadataHandler):
             LOGGER.error(f'Error in Superleap response: {error_details.error_message}')
             return responses.ListEntitiesResponse(is_success=False, error_details=error_details, cache_control=cache_control)
         
-        # LOGGER.info("Successfully retrieved entities list")
         try:
             # Parse the response to get entities and extract next_token if available
             response_json = json.loads(superleap_response.response)
             entities = parse_entities(superleap_response.response)
-            # LOGGER.info(f"Parsed {len(entities)} entities from response")
             
             # Check if the API response includes a next_token for pagination
             next_token = None
-            # if 'next_token' in response_json:
-            #     next_token = response_json['next_token']
-            #     LOGGER.info(f"Next token found in response: {next_token}")
             
             return responses.ListEntitiesResponse(
                 is_success=True, 
@@ -265,7 +249,6 @@ class SuperleapMetadataHandler(MetadataHandler):
             return responses.ListEntitiesResponse(is_success=False, error_details=error, cache_control=cache_control)
 
     def describe_entity(self, request: requests.DescribeEntityRequest) -> responses.DescribeEntityResponse:
-        # LOGGER.info(f"Received DescribeEntity request for entity: {request.entity_identifier}")
         error_details = validation.validate_request_connector_context(request)
         if error_details:
             LOGGER.error(f'DescribeEntity request failed with {str(error_details)}')
@@ -278,13 +261,10 @@ class SuperleapMetadataHandler(MetadataHandler):
             request_path=request.entity_identifier
         )
         
-        # LOGGER.info(f"Making GET request to describe entity: {request_uri}")
         try:
             # Use rest_get for retrieving entity details
             superleap_client = superleap.get_superleap_client(request.connector_context)
             superleap_response = superleap_client.rest_get(request_uri)
-            # LOGGER.info(f"Received response status: {superleap_response.status_code}")
-            # LOGGER.info(f"Response body preview: {superleap_response.response[:200]}...")
         except Exception as e:
             LOGGER.error(f"Exception during API call: {str(e)}", exc_info=True)
             error = responses.ErrorDetails(
@@ -299,10 +279,8 @@ class SuperleapMetadataHandler(MetadataHandler):
             LOGGER.error(f'Error in Superleap response: {error_details.error_message}')
             return responses.DescribeEntityResponse(is_success=False, error_details=error_details)
         
-        # LOGGER.info(f"Successfully retrieved entity details for {request.entity_identifier}")
         try:
             entity_definition = parse_entity_definition(superleap_response.response)
-            # LOGGER.info(f"Parsed entity definition with {len(entity_definition.fields)} fields")
             # Define cache control with 15 mins TTL
             cache_control = CacheControl(
                 time_to_live=900,  # 15 minutes

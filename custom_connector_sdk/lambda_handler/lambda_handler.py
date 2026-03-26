@@ -28,7 +28,6 @@ class BaseLambdaConnectorHandler:
 
         try:
             event_type = event['type']
-            logger.info('Handling request for requestType: ' + event_type)
 
             if event_type == VALIDATE_CONNECTOR_RUNTIME_SETTINGS:
                 request = requests.ValidateConnectorRuntimeSettingsRequest.from_dict(event)
