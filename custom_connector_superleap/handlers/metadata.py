@@ -73,8 +73,6 @@ def parse_entities(json_string: str) -> List[context.Entity]:
                 has_nested_entities=entity.get(HAS_NESTED_ENTITIES_KEY, False),
                 is_writable=entity.get(IS_WRITABLE_KEY, False)
             ))
-    else:
-        LOGGER.error(f'Invalid response format or unsuccessful response: {str(parent_object)}')
 
     return entity_list
 
