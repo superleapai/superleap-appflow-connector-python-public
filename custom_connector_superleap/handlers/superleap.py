@@ -65,9 +65,7 @@ def check_for_errors_in_superleap_response(response: SuperleapResponse) -> Optio
         error_code = ErrorCode.ServerError
         LOGGER.warning(f"Server error detected with status code: {status_code}")
 
-    error_message = f'Request failed with status code {status_code} error reason {response.error_reason} and ' + \
-                    f'Superleap response is {response.response}'
-    LOGGER.error(error_message)
+    error_message = f'Request failed with status code {status_code}'
 
     return ErrorDetails(error_code=error_code, error_message=error_message)
 

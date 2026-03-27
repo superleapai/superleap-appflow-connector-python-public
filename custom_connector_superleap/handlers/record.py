@@ -138,7 +138,6 @@ class SuperleapRecordHandler(RecordHandler):
         parsed_records = parse_query_response(superleap_response.response)
         # Get next token if present and save it, it will use that to continue pulling data.
         next_page = get_next_page(superleap_response.response)
-        LOGGER.info(f"next page is : {next_page}")
         LOGGER.info("=== END: query_data ===")
 
         if len(parsed_records) == 0 or next_page is None or next_page == "" or next_page == "None":

@@ -129,7 +129,6 @@ class SuperleapFilterParser:
         match = re.match(pattern, expression, re.IGNORECASE)
         
         if not match:
-            LOGGER.error(f"Failed to parse BETWEEN expression: {expression}")
             return []
         
         field = match.group(1)
@@ -170,7 +169,6 @@ class SuperleapFilterParser:
         match = re.match(pattern, expression, re.IGNORECASE)
         
         if not match:
-            LOGGER.error(f"Failed to parse IN expression: {expression}")
             return []
         
         field = match.group(1)
@@ -202,7 +200,6 @@ class SuperleapFilterParser:
         match = re.match(pattern, expression, re.IGNORECASE)
         
         if not match:
-            LOGGER.error(f"Failed to parse comparison expression: {expression}")
             return {}
         
         field = match.group(1)
@@ -342,7 +339,7 @@ def build_query(query_object: QueryObject) -> dict:
         raise ValueError('No fields were selected for Superleap Query')
     
     if query_object.next_token is not None and query_object.next_token != '':
-        LOGGER.info(f"Using next token for pagination: {query_object.next_token}")
+        LOGGER.info("Using pagination token for next page")
 
             # page = int(query_object.next_token)
 
